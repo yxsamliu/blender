@@ -1205,7 +1205,7 @@ install(
 # Setup link libs
 
 add_dependencies(blender makesdna)
-target_link_libraries(blender ${LIB})
+target_link_libraries(blender ${LIB} -lgomp)
 unset(LIB)
 
 setup_platform_linker_flags(blender)
