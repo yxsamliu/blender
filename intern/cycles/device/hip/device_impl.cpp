@@ -268,7 +268,7 @@ string HIPDevice::compile_kernel(const uint kernel_features, const char *name, c
 #  ifdef _WIN32
   options.append("Wno-parentheses-equality -Wno-unused-value --hipcc-func-supp -ffast-math");
 #  else
-  options.append("Wno-parentheses-equality -Wno-unused-value --hipcc-func-supp -O3 -ffast-math");
+  options.append("Wno-parentheses-equality -Wno-unused-value --hipcc-func-supp -ffast-math");
 #  endif
 #  ifdef _DEBUG
   options.append(" -save-temps");
