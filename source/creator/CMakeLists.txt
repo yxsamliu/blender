@@ -513,12 +513,12 @@ if(UNIX AND NOT APPLE)
       DESTINATION "."
     )
 
-    if(WITH_BLENDER_THUMBNAILER)
-      install(
-        TARGETS blender-thumbnailer
-        DESTINATION "."
-      )
-    endif()
+    #if(WITH_BLENDER_THUMBNAILER)
+	    #install(
+	    #TARGETS blender-thumbnailer
+	    #DESTINATION "."
+	    #)
+	    #endif()
 
     if(EXISTS ${LIBDIR}/mesa)
       install(DIRECTORY ${LIBDIR}/mesa/lib DESTINATION ".")
