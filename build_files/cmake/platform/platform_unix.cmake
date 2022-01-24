@@ -108,7 +108,7 @@ if(NOT WITH_SYSTEM_FREETYPE)
   # FreeType compiled with Brotli compression for woff2.
   find_package_wrapper(Freetype REQUIRED)
   if(EXISTS ${LIBDIR})
-    find_package_wrapper(Brotli REQUIRED)
+    #find_package_wrapper(Brotli REQUIRED)
 
     # NOTE: This is done on WIN32 & APPLE but fails on some Linux systems.
     # See: https://devtalk.blender.org/t/22536
