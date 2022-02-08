@@ -1149,7 +1149,7 @@ bool HIPDevice::should_use_graphics_interop()
    * pixels copy. */
 
   /* Disable graphics interop for now, because of driver bug in 21.40. See T92972 */
-#  if 0
+#ifdef _WIN32
   HIPContextScope scope(this);
 
   int num_all_devices = 0;
@@ -1161,14 +1161,14 @@ bool HIPDevice::should_use_graphics_interop()
 
   vector<hipDevice_t> gl_devices(num_all_devices);
   uint num_gl_devices = 0;
-  hipGLGetDevices(&num_gl_devices, gl_devices.data(), num_all_devices, hipGLDeviceListAll);
+  hip_assert(hipGLGetDevices(&num_gl_devices, gl_devices.data(), num_all_devices, hipGLDeviceListAll));
 
   for (hipDevice_t gl_device : gl_devices) {
     if (gl_device == hipDevice) {
       return true;
     }
   }
-#  endif
+#endif
 
   return false;
 }

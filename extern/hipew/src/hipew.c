@@ -65,15 +65,15 @@ typedef void* DynamicLibrary;
 static DynamicLibrary hip_lib;
 
 /* Function definitions. */
-thipGetErrorName *hipGetErrorName;
+thipGetErrorName *__hipGetErrorName;
 thipInit *hipInit;
 thipDriverGetVersion *hipDriverGetVersion;
 thipGetDevice *hipGetDevice;
 thipGetDeviceCount *hipGetDeviceCount;
-thipGetDeviceProperties *hipGetDeviceProperties;
+thipGetDeviceProperties *__hipGetDeviceProperties;
 thipDeviceGet* hipDeviceGet;
 thipDeviceGetName *hipDeviceGetName;
-thipDeviceGetAttribute *hipDeviceGetAttribute;
+thipDeviceGetAttribute *__hipDeviceGetAttribute;
 thipDeviceComputeCapability *hipDeviceComputeCapability;
 thipDevicePrimaryCtxRetain *hipDevicePrimaryCtxRetain;
 thipDevicePrimaryCtxRelease *hipDevicePrimaryCtxRelease;
@@ -105,7 +105,7 @@ thipModuleGetTexRef *hipModuleGetTexRef;
 thipMemGetInfo *hipMemGetInfo;
 thipMalloc *hipMalloc;
 thipMemAllocPitch *hipMemAllocPitch;
-thipFree *hipFree;
+thipFree *__hipFree;
 thipMemGetAddressRange *hipMemGetAddressRange;
 thipHostMalloc *hipHostMalloc;
 thipHostFree *hipHostFree;
@@ -200,6 +200,9 @@ static DynamicLibrary dynamic_library_open_find(const char **paths) {
       if (lib != NULL) {
         return lib;
       }
+      else {
+        printf("dlopen failed: %s\n", dlerror());
+      }
       ++i;
   }
   return NULL;
@@ -288,15 +291,18 @@ static int hipewHipInit(void) {
   }
 
   /* Fetch all function pointers. */
-  HIP_LIBRARY_FIND_CHECKED(hipGetErrorName);
+  //HIP_LIBRARY_FIND_CHECKED(hipGetErrorName);
+  hipGetErrorName = (thipGetErrorName*)dynamic_library_find(hip_lib, "hipGetErrorName");
   HIP_LIBRARY_FIND_CHECKED(hipInit);
   HIP_LIBRARY_FIND_CHECKED(hipDriverGetVersion);
   HIP_LIBRARY_FIND_CHECKED(hipGetDevice);
   HIP_LIBRARY_FIND_CHECKED(hipGetDeviceCount);
-  HIP_LIBRARY_FIND_CHECKED(hipGetDeviceProperties);
+  //HIP_LIBRARY_FIND_CHECKED(hipGetDeviceProperties);
+  hipGetDeviceProperties = (thipGetDeviceProperties*)dynamic_library_find(hip_lib, "hipGetDeviceProperties");
   HIP_LIBRARY_FIND_CHECKED(hipDeviceGet);
   HIP_LIBRARY_FIND_CHECKED(hipDeviceGetName);
-  HIP_LIBRARY_FIND_CHECKED(hipDeviceGetAttribute);
+  // HIP_LIBRARY_FIND_CHECKED(hipDeviceGetAttribute);
+  hipDeviceGetAttribute = (thipDeviceGetAttribute*)dynamic_library_find(hip_lib, "hipDeviceGetAttribute");
   HIP_LIBRARY_FIND_CHECKED(hipDeviceComputeCapability);
   HIP_LIBRARY_FIND_CHECKED(hipDevicePrimaryCtxRetain);
   HIP_LIBRARY_FIND_CHECKED(hipDevicePrimaryCtxRelease);
@@ -328,7 +334,8 @@ static int hipewHipInit(void) {
   HIP_LIBRARY_FIND_CHECKED(hipMemGetInfo);
   HIP_LIBRARY_FIND_CHECKED(hipMalloc);
   HIP_LIBRARY_FIND_CHECKED(hipMemAllocPitch);
-  HIP_LIBRARY_FIND_CHECKED(hipFree);
+  //HIP_LIBRARY_FIND_CHECKED(hipFree);
+  hipFree = (thipFree*)dynamic_library_find(hip_lib, "hipFree");
   HIP_LIBRARY_FIND_CHECKED(hipMemGetAddressRange);
   HIP_LIBRARY_FIND_CHECKED(hipHostMalloc);
   HIP_LIBRARY_FIND_CHECKED(hipHostFree);

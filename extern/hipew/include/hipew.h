@@ -1200,17 +1200,21 @@ typedef hiprtcResult HIPAPI thiprtcGetProgramLogSize(hiprtcProgram prog, size_t*
 typedef hiprtcResult HIPAPI thiprtcGetCode(hiprtcProgram prog, char* code);
 typedef hiprtcResult HIPAPI thiprtcGetCodeSize(hiprtcProgram prog, size_t* codeSizeRet);
 
+#define hipFree __hipFree
+#define hipDeviceGetAttribute __hipDeviceGetAttribute
+#define hipGetDeviceProperties __hipGetDeviceProperties
+#define hipGetErrorName __hipGetErrorName
 
 /* Function declarations. */
-extern thipGetErrorName *hipGetErrorName;
+extern thipGetErrorName *__hipGetErrorName;
 extern thipInit *hipInit;
 extern thipDriverGetVersion *hipDriverGetVersion;
 extern thipGetDevice *hipGetDevice;
 extern thipGetDeviceCount *hipGetDeviceCount;
-extern thipGetDeviceProperties *hipGetDeviceProperties;
+extern thipGetDeviceProperties *__hipGetDeviceProperties;
 extern thipDeviceGet* hipDeviceGet;
 extern thipDeviceGetName *hipDeviceGetName;
-extern thipDeviceGetAttribute *hipDeviceGetAttribute;
+extern thipDeviceGetAttribute *__hipDeviceGetAttribute;
 extern thipDeviceComputeCapability *hipDeviceComputeCapability;
 extern thipDevicePrimaryCtxRetain *hipDevicePrimaryCtxRetain;
 extern thipDevicePrimaryCtxRelease *hipDevicePrimaryCtxRelease;
@@ -1242,7 +1246,7 @@ extern thipModuleGetTexRef *hipModuleGetTexRef;
 extern thipMemGetInfo *hipMemGetInfo;
 extern thipMalloc *hipMalloc;
 extern thipMemAllocPitch *hipMemAllocPitch;
-extern thipFree *hipFree;
+extern thipFree *__hipFree;
 extern thipMemGetAddressRange *hipMemGetAddressRange;
 extern thipHostMalloc *hipHostMalloc;
 extern thipHostFree *hipHostFree;
