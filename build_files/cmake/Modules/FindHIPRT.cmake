@@ -12,6 +12,11 @@ if(NOT HIPRT_ROOT_DIR AND NOT $ENV{HIPRT_ROOT_DIR} STREQUAL "")
   set(HIPRT_ROOT_DIR $ENV{HIPRT_ROOT_DIR})
 endif()
 
+# Else use the built in HIP_PATH environment variable from the SDK
+if(NOT HIPRT_ROOT_DIR AND NOT $ENV{HIP_PATH} STREQUAL "")
+  set(HIPRT_ROOT_DIR $ENV{HIP_PATH})
+endif()
+
 set(_hiprt_SEARCH_DIRS
   ${HIPRT_ROOT_DIR}
 )
