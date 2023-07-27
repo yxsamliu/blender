@@ -20,7 +20,7 @@ find_path(HIPRT_INCLUDE_DIR
   NAMES
     hiprt/hiprt.h
   HINTS
-    ${_hiprt_SEARCH_DIRS}
+    ${_hiprt_SEARCH_DIRS}/include
 )
 
 if(HIPRT_INCLUDE_DIR)
@@ -32,7 +32,7 @@ if(HIPRT_INCLUDE_DIR)
     NAMES
       hiprt${_hiprt_version}_amd_lib_win.bc
     HINTS
-      ${HIPRT_ROOT_DIR}/dist/bin/Release
+      ${HIPRT_ROOT_DIR}/bin
     NO_DEFAULT_PATH
   )
 
