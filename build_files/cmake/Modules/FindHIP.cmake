@@ -19,6 +19,7 @@ endif()
 
 set(_hip_SEARCH_DIRS
   ${HIP_ROOT_DIR}
+  ${HIP_ROOT_DIR}/..
 )
 
 find_program(HIP_HIPCC_EXECUTABLE
@@ -30,7 +31,6 @@ find_program(HIP_HIPCC_EXECUTABLE
     bin
 )
 
-if(WIN32)
   # Needed for HIP-RT on Windows.
   find_program(HIP_LINKER_EXECUTABLE
     NAMES
@@ -38,10 +38,15 @@ if(WIN32)
     HINTS
       ${_hip_SEARCH_DIRS}
     PATH_SUFFIXES
+      llvm/bin
       bin
     NO_DEFAULT_PATH
     NO_CMAKE_PATH
   )
+if(HIP_LINKER_EXECUTABLE)
+    message(STATUS "HIPRT linker found at: ${HIP_LINKER_EXECUTABLE}")
+else()
+    message(FATAL_ERROR "HIPRT linker not found!")
 endif()
 
 if(HIP_HIPCC_EXECUTABLE)

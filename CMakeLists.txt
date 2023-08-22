@@ -556,10 +556,10 @@ if(NOT APPLE)
   mark_as_advanced(CYCLES_HIP_BINARIES_ARCH)
 
   # HIPRT is only available on Windows for now.
-  if(WIN32)
+  #if(WIN32)
     option(WITH_CYCLES_DEVICE_HIPRT "Enable Cycles AMD HIPRT support" ON)
     mark_as_advanced(WITH_CYCLES_DEVICE_HIPRT)
-  endif()
+  #endif()
 endif()
 
 # Apple Metal
@@ -2035,9 +2035,9 @@ if(FIRST_RUN)
       info_cfg_option(WITH_CYCLES_DEVICE_HIP)
       info_cfg_option(WITH_CYCLES_HIP_BINARIES)
     endif()
-    if(WIN32)
+    #if(WIN32)
       info_cfg_option(WITH_CYCLES_DEVICE_HIPRT)
-    endif()
+    #endif()
   endif()
 
   info_cfg_text("")

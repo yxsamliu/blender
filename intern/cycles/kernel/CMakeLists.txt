@@ -693,6 +693,7 @@ if(WITH_CYCLES_DEVICE_HIPRT AND WITH_CYCLES_HIP_BINARIES)
     -D __HIPRT__
     -std=c++17
     -fgpu-rdc
+    -mcode-object-version=4
     -c
     --gpu-bundle-output
     -emit-llvm
@@ -711,17 +712,18 @@ if(WITH_CYCLES_DEVICE_HIPRT AND WITH_CYCLES_HIP_BINARIES)
     OUTPUT  ${bitcode_file}
     COMMAND ${hiprt_compile_command} ${hiprt_compile_flags}
     DEPENDS ${kernel_sources})
-  if(WIN32)
+  #if(WIN32)
     set(hiprt_link_command ${CMAKE_COMMAND})
     set(hiprt_link_flags   -E env "HIP_PATH=${HIP_ROOT_DIR}"
       ${HIP_LINKER_EXECUTABLE})
-  else()
+  #else()
     # not implemented yet
-  endif()
+  #endif()
   set(hiprt_link_flags
     ${hiprt_link_flags}
     ${target_gpus}
     -fgpu-rdc
+    -mcode-object-version=4
     --hip-link
     --cuda-device-only
     ${bitcode_file}

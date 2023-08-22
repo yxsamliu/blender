@@ -32,10 +32,14 @@ if(HIPRT_INCLUDE_DIR)
   file(STRINGS "${HIPRT_INCLUDE_DIR}/hiprt/hiprt.h" _hiprt_version
     REGEX "^#define HIPRT_VERSION_STR[ \t]\".*\"$")
   string(REGEX MATCHALL "[0-9]+[.0-9]+" _hiprt_version ${_hiprt_version})
-
+#if(WIN32)
+   set(HIPRT_BITCODE_POSTFIX _win)
+#else()
+   set(HIPRT_BITCODE_POSTFIX _linux)
+#endif()
   find_file(HIPRT_BITCODE
     NAMES
-      hiprt${_hiprt_version}_amd_lib_win.bc
+      hiprt${_hiprt_version}_amd_lib${HIPRT_BITCODE_POSTFIX}.bc
     HINTS
       ${HIPRT_ROOT_DIR}/dist/bin/Release
     NO_DEFAULT_PATH

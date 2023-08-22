@@ -232,7 +232,7 @@ string HIPRTDevice::compile_kernel(const uint kernel_features, const char *name,
     rtc_options.append(" --offload-arch=").append(arch);
     rtc_options.append(" -D __HIPRT__");
     rtc_options.append(" -ffast-math -O3 -std=c++17");
-    rtc_options.append(" -fgpu-rdc -c --gpu-bundle-output -c -emit-llvm");
+    rtc_options.append(" -fgpu-rdc -mcode-object-version=4 -c --gpu-bundle-output -c -emit-llvm");
 
     string command = string_printf("%s %s -I %s  -I %s %s -o \"%s\"",
                                    hipcc,
@@ -261,9 +261,13 @@ string HIPRTDevice::compile_kernel(const uint kernel_features, const char *name,
   // implementations of HIP RT functions, e.g. traversal, to produce the final executable code
   string linker_options;
   linker_options.append(" --offload-arch=").append(arch);
-  linker_options.append(" -fgpu-rdc --hip-link --cuda-device-only ");
+  linker_options.append(" -fgpu-rdc -mcode-object-version=4 --hip-link --cuda-device-only ");
   string hiprt_ver(HIPRT_VERSION_STR);
+#ifdef _WIN32
   string hiprt_bc = hiprt_path + "\\dist\\bin\\Release\\hiprt" + hiprt_ver + "_amd_lib_win.bc";
+#else
+  string hiprt_bc = hiprt_path + "\\dist\\bin\\Release\\hiprt" + hiprt_ver + "_amd_lib_linux.bc";
+#endif
 
   string linker_command = string_printf("clang++ %s \"%s\" %s -o \"%s\"",
                                         linker_options.c_str(),

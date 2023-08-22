@@ -1583,7 +1583,7 @@ class CyclesPreferences(bpy.types.AddonPreferences):
         name="HIP RT (Experimental)",
         description="HIP RT enables AMD hardware ray tracing on RDNA2 and above, with shader fallback on older cards. "
                     "This feature is experimental and some scenes may render incorrectly",
-        default=False,
+        default=True,
     )
 
     use_oneapirt: BoolProperty(
