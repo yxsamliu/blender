@@ -255,9 +255,9 @@ string HIPDevice::compile_kernel(const uint kernel_features, const char *name, c
   const char *const kernel_ext = "genco";
   std::string options;
 #  ifdef _WIN32
-  options.append("Wno-parentheses-equality -Wno-unused-value --hipcc-func-supp -ffast-math");
+  options.append("Wno-parentheses-equality -Wno-unused-value --hipcc-func-supp -ffast-math -mllvm=--disable-machine-licm");
 #  else
-  options.append("Wno-parentheses-equality -Wno-unused-value --hipcc-func-supp -O3 -ffast-math");
+  options.append("Wno-parentheses-equality -Wno-unused-value --hipcc-func-supp -O3 -ffast-math -mllvm=--disable-machine-licm");
 #  endif
 #  ifdef _DEBUG
   options.append(" -save-temps");

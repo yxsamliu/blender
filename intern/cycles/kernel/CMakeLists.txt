@@ -630,6 +630,7 @@ if(WITH_CYCLES_HIP_BINARIES AND WITH_CYCLES_DEVICE_HIP)
       -Wno-unused-value
       --hipcc-func-supp
       -ffast-math
+      -mllvm=--disable-machine-licm
       ${hip_opt_flags}
       -o ${CMAKE_CURRENT_BINARY_DIR}/${hip_file})
 
@@ -707,6 +708,7 @@ if(WITH_CYCLES_DEVICE_HIPRT AND WITH_CYCLES_HIP_BINARIES)
     -Wno-unused-value
     --hipcc-func-supp
     -ffast-math
+    -mllvm=--disable-machine-licm
     -o ${bitcode_file})
   if(WITH_CYCLES_DEBUG)
     set(hiprt_compile_flags ${hiprt_compile_flags} -D WITH_CYCLES_DEBUG)
@@ -728,6 +730,7 @@ if(WITH_CYCLES_DEVICE_HIPRT AND WITH_CYCLES_HIP_BINARIES)
     -fgpu-rdc
     --hip-link
     --cuda-device-only
+    -mllvm=--disable-machine-licm
     ${bitcode_file}
     ${HIPRT_BITCODE}
     -o ${hiprt_file})

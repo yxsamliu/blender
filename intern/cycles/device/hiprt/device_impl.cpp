@@ -261,7 +261,7 @@ string HIPRTDevice::compile_kernel(const uint kernel_features, const char *name,
   // implementations of HIP RT functions, e.g. traversal, to produce the final executable code
   string linker_options;
   linker_options.append(" --offload-arch=").append(arch);
-  linker_options.append(" -fgpu-rdc --hip-link --cuda-device-only ");
+  linker_options.append(" -fgpu-rdc --hip-link --cuda-device-only -mllvm=--disable-machine-licm");
   string hiprt_ver(HIPRT_VERSION_STR);
   string hiprt_bc = hiprt_path + "\\dist\\bin\\Release\\hiprt" + hiprt_ver + "_amd_lib_win.bc";
 
