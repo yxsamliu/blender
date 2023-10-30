@@ -61,6 +61,13 @@ ccl_device bool integrator_init_from_camera(KernelGlobals kg,
 {
   PROFILING_INIT(kg, PROFILING_RAY_SETUP);
 
+#if __HIP__
+  const bool dbg = threadIdx.x == 0 && threadIdx.y == 0 && blockIdx.x == 0 && blockIdx.y == 0;
+#else
+  const bool dbg = false;
+#endif
+#define PP if(dbg) printf("integrator_init_from_camera %d\n", __LINE__);
+  PP
   /* Initialize path state to give basic buffer access and allow early outputs. */
   path_state_init(state, tile, x, y);
 
@@ -68,7 +75,7 @@ ccl_device bool integrator_init_from_camera(KernelGlobals kg,
   if (!film_need_sample_pixel(kg, state, render_buffer)) {
     return false;
   }
-
+  PP
   /* Count the sample and get an effective sample for this pixel.
    *
    * This logic allows to both count actual number of samples per pixel, and to add samples to this
@@ -87,21 +94,23 @@ ccl_device bool integrator_init_from_camera(KernelGlobals kg,
     if (ray.tmax == 0.0f) {
       return true;
     }
-
+    PP
     /* Write camera ray to state. */
     integrator_state_write_ray(state, &ray);
   }
-
+  PP
   /* Initialize path state for path integration. */
   path_state_init_integrator(kg, state, sample, rng_hash);
-
+  PP
   /* Continue with intersect_closest kernel, optionally initializing volume
    * stack before that if the camera may be inside a volume. */
   if (kernel_data.cam.is_inside_volume) {
     integrator_path_init(kg, state, DEVICE_KERNEL_INTEGRATOR_INTERSECT_VOLUME_STACK);
+    PP
   }
   else {
     integrator_path_init(kg, state, DEVICE_KERNEL_INTEGRATOR_INTERSECT_CLOSEST);
+    PP
   }
 
   return true;

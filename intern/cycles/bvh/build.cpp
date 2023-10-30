@@ -852,7 +852,7 @@ BVHNode *BVHBuild::build_node(const BVHRange &range,
 
   /* Create inner node. */
   InnerNode *inner;
-  if (range.size() < THREAD_TASK_SIZE) {
+  if (!getenv("DB_BVH") || range.size() < THREAD_TASK_SIZE) {
     /* Local build. */
 
     /* Build left node. */
