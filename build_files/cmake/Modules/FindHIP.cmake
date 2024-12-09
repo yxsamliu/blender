@@ -22,9 +22,9 @@ elseif(DEFINED ENV{HIP_PATH})
 endif()
 
 set(_hip_SEARCH_DIRS
-  ${HIP_ROOT_DIR}
   /opt/rocm
   /opt/rocm/hip
+  ${HIP_ROOT_DIR}
 )
 
 find_program(HIP_HIPCC_EXECUTABLE
