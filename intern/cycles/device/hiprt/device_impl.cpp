@@ -819,7 +819,6 @@ void HIPRTDevice::build_blas(BVHHIPRT *bvh, Geometry *geom, hiprtBuildOptions op
   if (rt_err != hiprtSuccess) {
     set_error(string_printf("Failed to create BLAS!"));
   }
-  bvh->geom_input = geom_input;
   {
     thread_scoped_lock lock(hiprt_mutex);
     if (blas_scratch_buffer_size > scratch_buffer_size) {
@@ -827,6 +826,14 @@ void HIPRTDevice::build_blas(BVHHIPRT *bvh, Geometry *geom, hiprtBuildOptions op
       scratch_buffer_size = blas_scratch_buffer_size;
       scratch_buffer.zero_to_device();
     }
+    if (!scratch_buffer.device_pointer) {
+      scratch_buffer_size = 0;
+      scratch_buffer.free();
+      hiprtDestroyGeometry(hiprt_context, bvh->hiprt_geom);
+      bvh->hiprt_geom = NULL;
+      return;
+    }
+    bvh->geom_input = geom_input;
     rt_err = hiprtBuildGeometry(hiprt_context,
                                 hiprtBuildOperationBuild,
                                 bvh->geom_input,
