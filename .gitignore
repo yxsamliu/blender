@@ -30,6 +30,8 @@ Desktop.ini
 # local patches
 /*.patch
 /*.diff
+/res.*
+/out.*.txt
 
 # in-source doc-gen
 /doc/doxygen/html/
