@@ -884,11 +884,13 @@ if(WITH_CYCLES_DEVICE_HIPRT)
 
   add_custom_command(
     OUTPUT  ${cycles_bitcode_file}
+    COMMAND ${CMAKE_COMMAND} -E echo "compile HIPRT cycles bc: ${hiprt_compile_command} ${hiprt_compile_flags_cycles_bc}"
     COMMAND ${hiprt_compile_command} ${hiprt_compile_flags_cycles_bc}
     DEPENDS ${kernel_sources})
 
   add_custom_command(
     OUTPUT  ${sdk_bitcode_file}
+    COMMAND ${CMAKE_COMMAND} -E echo "compile HIPRT sdk bc: ${hiprt_compile_command} ${hiprt_compile_flags_sdk_bc}"
     COMMAND ${hiprt_compile_command} ${hiprt_compile_flags_sdk_bc}
     DEPENDS ${HIPRT_INCLUDE_DIR}/hiprt/impl/hiprt_kernels_bitcode.h)
 
@@ -914,11 +916,13 @@ if(WITH_CYCLES_DEVICE_HIPRT)
 
     add_custom_command(
       OUTPUT  ${hiprt_file}
+      COMMAND ${CMAKE_COMMAND} -E echo "link HIPRT: ${hiprt_link_command} ${hiprt_link_flags}"
       COMMAND ${hiprt_link_command} ${hiprt_link_flags}
       DEPENDS ${cycles_bitcode_file} ${sdk_bitcode_file})
 
     add_custom_command(
       OUTPUT ${hiprt_file_compressed}
+      COMMAND ${CMAKE_COMMAND} -E echo "compress HIPRT: $<TARGET_FILE:zstd_compress> ${hiprt_file} ${hiprt_file_compressed}"
       COMMAND "$<TARGET_FILE:zstd_compress>" ${hiprt_file} ${hiprt_file_compressed}
       DEPENDS ${hiprt_file})
     delayed_install("${CMAKE_CURRENT_BINARY_DIR}" "${hiprt_file_compressed}" ${CYCLES_INSTALL_PATH}/lib)
