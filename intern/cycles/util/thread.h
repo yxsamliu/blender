@@ -9,6 +9,7 @@
 #include <functional>
 #include <mutex>
 #include <queue>
+#include <chrono>
 #include <thread>
 
 #ifdef _WIN32
