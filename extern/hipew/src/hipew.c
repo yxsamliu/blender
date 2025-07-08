@@ -237,7 +237,7 @@ static int hipewHipInit(void) {
   /* Library paths. */
 #ifdef _WIN32
   /* Expected in C:/Windows/System32 or similar, no path needed. */
-  const char *hip_paths[] = {WIN_DRIVER, NULL};
+  const char *hip_paths[] = {"amdhip64_7.dll",WIN_DRIVER, NULL};
 #elif defined(__APPLE__)
   /* Default installation path. */
   const char *hip_paths[] = {"", NULL};
@@ -250,7 +250,8 @@ static int hipewHipInit(void) {
                                "/opt/rocm/hip/lib/libamdhip64.so.5",
                                 NULL};
   #else
-  const char *hip_paths[] = {"libamdhip64.so.6",
+  const char *hip_paths[] = { "libamdhip64.so.7",
+                              "libamdhip64.so.6",
                               "/opt/rocm/lib/libamdhip64.so.6",
                               "/opt/rocm/hip/lib/libamdhip64.so.6",
                                NULL};
