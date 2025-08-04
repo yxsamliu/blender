@@ -36,6 +36,10 @@ endif()
 
 
 blender_add_lib(extern_hipew "${SRC}" "${INC}" "${INC_SYS}" "${LIB}")
+if(WITH_OFFLOAD_PGO)
+  set_source_files_properties(src/hipew.c PROPERTIES COMPILE_FLAGS "-fprofile-generate=offload-pgo")
+  set_source_files_properties(src/hipew.c PROPERTIES LINK_FLAGS "-L/opt/rocm/lib -lamdhip64")
+endif()
 
 find_package(HIP 5.5.0)
 if(HIP_VERSION_MAJOR EQUAL 5)

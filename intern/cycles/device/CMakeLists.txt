@@ -214,6 +214,10 @@ include_directories(${INC})
 include_directories(SYSTEM ${INC_SYS})
 
 cycles_add_library(cycles_device "${LIB}" ${SRC})
+if(WITH_OFFLOAD_PGO)
+  set_source_files_properties(hip/device_impl.cpp PROPERTIES COMPILE_FLAGS "-fprofile-generate=offload-pgo")
+  set_source_files_properties(hip/device_impl.cpp PROPERTIES LINK_FLAGS "-L/opt/rocm/lib -lamdhip64")
+endif()
 
 if(WITH_CYCLES_DEVICE_ONEAPI)
   # Need to have proper rebuilding in case of changes

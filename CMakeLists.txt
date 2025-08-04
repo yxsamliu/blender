@@ -160,6 +160,10 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   endif()
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  string(APPEND CMAKE_EXE_LINKER_FLAGS " -fuse-ld=bfd")
+endif()
+
 # -----------------------------------------------------------------------------
 # Test Compiler/Library Features
 
@@ -798,6 +802,7 @@ if(WIN32 AND NOT CMAKE_SYSTEM_PROCESSOR STREQUAL "ARM64")
 endif()
 
 option(WITH_EXPERIMENTAL_FEATURES "Enable experimental features" ON)
+option(WITH_OFFLOAD_PGO "Enable Offload PGO" OFF)
 
 # This should be turned off when Blender enter beta/rc/release
 if("${BLENDER_VERSION_CYCLE}" STREQUAL "alpha" AND WITH_EXPERIMENTAL_FEATURES)
