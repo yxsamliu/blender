@@ -185,6 +185,7 @@ thiprtcLinkDestroy* hiprtcLinkDestroy;
 static DynamicLibrary dynamic_library_open_find(const char **paths) {
   int i = 0;
   while (paths[i] != NULL) {
+      printf("HIPEW: Trying to open %s\n", paths[i]);
       DynamicLibrary lib = dynamic_library_open(paths[i]);
       if (lib != NULL) {
         return lib;
@@ -250,8 +251,11 @@ static int hipewHipInit(void) {
                                "/opt/rocm/hip/lib/libamdhip64.so.5",
                                 NULL};
   #else
-  const char *hip_paths[] = {"libamdhip64.so.6",
+  const char *hip_paths[] = {"libamdhip64.so.7",
+                              "libamdhip64.so.6",
+                              "/opt/rocm/lib/libamdhip64.so.7",
                               "/opt/rocm/lib/libamdhip64.so.6",
+                              "/opt/rocm/hip/lib/libamdhip64.so.7",
                               "/opt/rocm/hip/lib/libamdhip64.so.6",
                                NULL};
 
