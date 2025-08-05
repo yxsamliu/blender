@@ -331,7 +331,7 @@ else()
   add_executable(blender ${EXETYPE} ${SRC})
   if(WITH_OFFLOAD_PGO)
     target_compile_options(blender PRIVATE -fprofile-generate=offload-pgo)
-    target_link_options(blender PRIVATE -fprofile-generate=offload-pgo -L/opt/rocm/lib -lamdhip64)
+    target_link_options(blender PRIVATE -fprofile-generate=offload-pgo)
   endif()
   if(WITH_CPU_CHECK)
     # blender_cpu_check *NEEDS* to be linked first, there can be no exceptions

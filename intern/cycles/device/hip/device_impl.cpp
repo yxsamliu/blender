@@ -123,11 +123,13 @@ HIPDevice::HIPDevice(const DeviceInfo &info, Stats &stats, Profiler &profiler, b
   /* Pop context set by hipCtxCreate. */
   hipCtxPopCurrent(nullptr);
 }
+extern "C" void __llvm_profile_hip_unregister_dynamic_module(void*);
 
 HIPDevice::~HIPDevice()
 {
   texture_info.free();
   if (hipModule) {
+    __llvm_profile_hip_unregister_dynamic_module((void*)hipModule);
     hip_assert(hipModuleUnload(hipModule));
   }
   hip_assert(hipCtxDestroy(hipContext));
@@ -372,6 +374,8 @@ string HIPDevice::compile_kernel(const uint kernel_features, const char *name, c
   return fatbin;
 }
 
+extern "C" void __llvm_profile_hip_register_dynamic_module(int ModuleLoadRC, void **Ptr);
+
 bool HIPDevice::load_kernels(const uint kernel_features)
 {
   /* TODO(sergey): Support kernels re-load for HIP devices adaptive compile.
@@ -410,6 +414,7 @@ bool HIPDevice::load_kernels(const uint kernel_features)
 
   if (path_read_compressed_text(fatbin, fatbin_data)) {
     result = hipModuleLoadData(&hipModule, fatbin_data.c_str());
+    __llvm_profile_hip_register_dynamic_module(result, (void**)&hipModule);
   }
   else {
     result = hipErrorFileNotFound;
