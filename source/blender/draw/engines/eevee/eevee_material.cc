@@ -164,6 +164,8 @@ void MaterialModule::begin_sync()
   queued_textures_count = 0;
   queued_optimize_shaders_count = 0;
 
+  material_override = DEG_get_evaluated(inst_.depsgraph, inst_.view_layer->mat_override);
+
   uint64_t next_update = GPU_pass_global_compilation_count();
   gpu_pass_last_update_ = gpu_pass_next_update_;
   gpu_pass_next_update_ = next_update;
@@ -207,14 +209,18 @@ void MaterialModule::end_sync()
     for (auto i : range) {
       GPUMaterialTexture *tex = texture_loading_queue_[i];
       ImageUser *iuser = tex->iuser_available ? &tex->iuser : nullptr;
-      BKE_image_tag_time(tex->ima);
       BKE_image_get_tile(tex->ima, 0);
       ImBuf *imbuf = BKE_image_acquire_ibuf(tex->ima, iuser, nullptr);
       BKE_image_release_ibuf(tex->ima, imbuf, nullptr);
     }
   });
 
-  /* Upload to the GPU (create GPUTexture). This part still requires a valid GPU context and
+  /* Tag time is not thread-safe. */
+  for (GPUMaterialTexture *tex : texture_loading_queue_) {
+    BKE_image_tag_time(tex->ima);
+  }
+
+  /* Upload to the GPU (create gpu::Texture). This part still requires a valid GPU context and
    * is not easily parallelized. */
   for (GPUMaterialTexture *tex : texture_loading_queue_) {
     BLI_assert(tex->ima);
@@ -530,7 +536,7 @@ MaterialArray &MaterialModule::material_array_get(Object *ob, bool has_motion)
   const int materials_len = BKE_object_material_used_with_fallback_eval(*ob);
 
   for (auto i : IndexRange(materials_len)) {
-    ::Material *blender_mat = material_from_slot(ob, i);
+    ::Material *blender_mat = (material_override) ? material_override : material_from_slot(ob, i);
     Material &mat = material_sync(ob, blender_mat, to_material_geometry(ob), has_motion);
     /* \note Perform a whole copy since next material_sync() can move the Material memory location
      * (i.e: because of its container growing) */
@@ -545,7 +551,8 @@ Material &MaterialModule::material_get(Object *ob,
                                        int mat_nr,
                                        eMaterialGeometry geometry_type)
 {
-  ::Material *blender_mat = material_from_slot(ob, mat_nr);
+  ::Material *blender_mat = (material_override) ? material_override :
+                                                  material_from_slot(ob, mat_nr);
   Material &mat = material_sync(ob, blender_mat, geometry_type, has_motion);
   return mat;
 }

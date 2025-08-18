@@ -593,7 +593,7 @@ static bool key_test_depth(const PEData *data, const float co[3], const int scre
     return true;
   }
 
-/* used to calculate here but all callers have  the screen_co already, so pass as arg */
+/* used to calculate here but all callers have the screen_co already, so pass as arg */
 #if 0
   if (ED_view3d_project_int_global(data->vc.region,
                                    co,
@@ -3411,7 +3411,8 @@ static void brush_drawcursor(bContext *C,
   brush = &pset->brush[pset->brushtype];
 
   if (brush) {
-    uint pos = GPU_vertformat_attr_add(immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+    uint pos = GPU_vertformat_attr_add(
+        immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
     immBindBuiltinProgram(GPU_SHADER_3D_UNIFORM_COLOR);
 
     immUniformColor4ub(255, 255, 255, 128);

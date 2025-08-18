@@ -20,7 +20,7 @@
 #include "BLI_math_base.h"
 #include "BLI_math_geom.h"
 #include "BLI_rect.h"
-#include "BLI_string.h"
+#include "BLI_string_utf8.h"
 #include "BLI_utildefines.h"
 
 #include "BKE_context.hh"
@@ -145,7 +145,8 @@ static void draw_movieclip_cache(SpaceClip *sc, ARegion *region, MovieClip *clip
   BKE_movieclip_get_cache_segments(clip, &sc->user, &totseg, &points);
   ED_region_cache_draw_cached_segments(region, totseg, points, sfra, efra);
 
-  uint pos = GPU_vertformat_attr_add(immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+  uint pos = GPU_vertformat_attr_add(
+      immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
   immBindBuiltinProgram(GPU_SHADER_3D_UNIFORM_COLOR);
 
   /* track */
@@ -242,7 +243,8 @@ static void draw_movieclip_cache(SpaceClip *sc, ARegion *region, MovieClip *clip
   ED_region_cache_draw_curfra_label(
       sc->user.framenr, x + roundf(framelen / 2), 8.0f * UI_SCALE_FAC);
 
-  pos = GPU_vertformat_attr_add(immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+  pos = GPU_vertformat_attr_add(
+      immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
   immBindBuiltinProgram(GPU_SHADER_3D_UNIFORM_COLOR);
 
   /* solver keyframes */
@@ -268,12 +270,12 @@ static void draw_movieclip_notes(SpaceClip *sc, ARegion *region)
   bool full_redraw = false;
 
   if (tracking->stats) {
-    STRNCPY(str, tracking->stats->message);
+    STRNCPY_UTF8(str, tracking->stats->message);
     full_redraw = true;
   }
   else {
     if (sc->flag & SC_LOCK_SELECTION) {
-      STRNCPY(str, "Locked");
+      STRNCPY_UTF8(str, "Locked");
     }
   }
 
@@ -287,7 +289,8 @@ static void draw_movieclip_muted(ARegion *region, int width, int height, float z
 {
   int x, y;
 
-  uint pos = GPU_vertformat_attr_add(immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+  uint pos = GPU_vertformat_attr_add(
+      immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
   immBindBuiltinProgram(GPU_SHADER_3D_UNIFORM_COLOR);
 
   /* find window pixel coordinates of origin */
@@ -355,7 +358,7 @@ static void draw_stabilization_border(
   /* draw boundary border for frame if stabilization is enabled */
   if (sc->flag & SC_SHOW_STABLE && clip->tracking.stabilization.flag & TRACKING_2D_STABILIZATION) {
     const uint shdr_pos = GPU_vertformat_attr_add(
-        immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+        immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
 
     /* Exclusive OR allows to get orig value when second operand is 0,
      * and negative of orig value when second operand is 1. */
@@ -525,7 +528,7 @@ static void draw_track_path(SpaceClip *sc, MovieClip * /*clip*/, MovieTrackingTr
   const int path_center_index = count;
 
   const uint position_attribute = GPU_vertformat_attr_add(
-      immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+      immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
 
   /* Draw path outline. */
   if (!tiny) {
@@ -883,7 +886,7 @@ static void draw_marker_areas(SpaceClip *sc,
 
   immUnbindProgram();
   const uint pos = GPU_vertformat_attr_add(
-      immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+      immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
   BLI_assert(pos == shdr_pos);
   UNUSED_VARS_NDEBUG(pos);
 }
@@ -1098,23 +1101,23 @@ static void draw_marker_texts(SpaceClip *sc,
   pos[1] = pos[1] * zoomy - fontsize;
 
   if (marker->flag & MARKER_DISABLED) {
-    STRNCPY(state, "disabled");
+    STRNCPY_UTF8(state, "disabled");
   }
   else if (marker->framenr != ED_space_clip_get_clip_frame_number(sc)) {
-    STRNCPY(state, "estimated");
+    STRNCPY_UTF8(state, "estimated");
   }
   else if (marker->flag & MARKER_TRACKED) {
-    STRNCPY(state, "tracked");
+    STRNCPY_UTF8(state, "tracked");
   }
   else {
-    STRNCPY(state, "keyframed");
+    STRNCPY_UTF8(state, "keyframed");
   }
 
   if (state[0]) {
-    SNPRINTF(str, "%s: %s", track->name, state);
+    SNPRINTF_UTF8(str, "%s: %s", track->name, state);
   }
   else {
-    STRNCPY(str, track->name);
+    STRNCPY_UTF8(str, track->name);
   }
 
   BLF_position(fontid, pos[0], pos[1], 0.0f);
@@ -1122,7 +1125,7 @@ static void draw_marker_texts(SpaceClip *sc,
   pos[1] -= fontsize;
 
   if (track->flag & TRACK_HAS_BUNDLE) {
-    SNPRINTF(str, "Average error: %.2f px", track->error);
+    SNPRINTF_UTF8(str, "Average error: %.2f px", track->error);
     BLF_position(fontid, pos[0], pos[1], 0.0f);
     BLF_draw(fontid, str, sizeof(str));
     pos[1] -= fontsize;
@@ -1220,13 +1223,14 @@ static void draw_plane_marker_image(Scene *scene,
         GPU_blend(GPU_BLEND_ALPHA);
       }
 
-      GPUTexture *texture = GPU_texture_create_2d("plane_marker_image",
-                                                  ibuf->x,
-                                                  ibuf->y,
-                                                  1,
-                                                  GPU_RGBA8,
-                                                  GPU_TEXTURE_USAGE_SHADER_READ,
-                                                  nullptr);
+      blender::gpu::Texture *texture = GPU_texture_create_2d(
+          "plane_marker_image",
+          ibuf->x,
+          ibuf->y,
+          1,
+          blender::gpu::TextureFormat::UNORM_8_8_8_8,
+          GPU_TEXTURE_USAGE_SHADER_READ,
+          nullptr);
       GPU_texture_update(texture, GPU_DATA_UBYTE, display_buffer);
       GPU_texture_filter_mode(texture, false);
 
@@ -1234,9 +1238,10 @@ static void draw_plane_marker_image(Scene *scene,
       GPU_matrix_mul(gl_matrix);
 
       GPUVertFormat *imm_format = immVertexFormat();
-      uint pos = GPU_vertformat_attr_add(imm_format, "pos", GPU_COMP_F32, 3, GPU_FETCH_FLOAT);
+      uint pos = GPU_vertformat_attr_add(
+          imm_format, "pos", blender::gpu::VertAttrType::SFLOAT_32_32_32);
       uint texCoord = GPU_vertformat_attr_add(
-          imm_format, "texCoord", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+          imm_format, "texCoord", blender::gpu::VertAttrType::SFLOAT_32_32);
 
       /* Use 3D image for correct display of planar tracked images. */
       immBindBuiltinProgram(GPU_SHADER_3D_IMAGE_COLOR);
@@ -1305,7 +1310,7 @@ static void draw_plane_marker_ex(SpaceClip *sc,
 
   if (draw_plane_quad || is_selected_track) {
     const uint shdr_pos = GPU_vertformat_attr_add(
-        immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+        immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
 
     immBindBuiltinProgram(GPU_SHADER_3D_LINE_DASHED_UNIFORM_COLOR);
 
@@ -1543,7 +1548,7 @@ static void draw_tracking_tracks(SpaceClip *sc,
   }
 
   const uint position = GPU_vertformat_attr_add(
-      immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+      immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
 
   /* markers outline and non-selected areas */
   fp = marker_pos;
@@ -1723,7 +1728,7 @@ static void draw_distortion(SpaceClip *sc,
   GPU_matrix_scale_2f(width, height);
 
   uint position = GPU_vertformat_attr_add(
-      immVertexFormat(), "pos", GPU_COMP_F32, 2, GPU_FETCH_FLOAT);
+      immVertexFormat(), "pos", blender::gpu::VertAttrType::SFLOAT_32_32);
 
   immBindBuiltinProgram(GPU_SHADER_3D_UNIFORM_COLOR);
 

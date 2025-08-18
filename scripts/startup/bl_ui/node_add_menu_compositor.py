@@ -14,23 +14,18 @@ class NODE_MT_category_compositor_input(Menu):
     bl_label = "Input"
 
     def draw(self, context):
-        snode = context.space_data
-        is_group = (len(snode.path) > 1)
-
+        del context
         layout = self.layout
         layout.menu("NODE_MT_category_compositor_input_constant")
         layout.separator()
+        node_add_menu.add_node_type(layout, "NodeGroupInput")
         node_add_menu.add_node_type(layout, "CompositorNodeBokehImage")
         node_add_menu.add_node_type(layout, "CompositorNodeImage")
         node_add_menu.add_node_type(layout, "CompositorNodeImageInfo")
         node_add_menu.add_node_type(layout, "CompositorNodeImageCoordinates")
         node_add_menu.add_node_type(layout, "CompositorNodeMask")
         node_add_menu.add_node_type(layout, "CompositorNodeMovieClip")
-        node_add_menu.add_node_type(layout, "CompositorNodeTexture")
 
-        if is_group:
-            layout.separator()
-            node_add_menu.add_node_type(layout, "NodeGroupInput")
         layout.separator()
         layout.menu("NODE_MT_category_compositor_input_scene")
 
@@ -45,6 +40,7 @@ class NODE_MT_category_compositor_input_constant(Menu):
         layout = self.layout
         node_add_menu.add_node_type(layout, "CompositorNodeRGB")
         node_add_menu.add_node_type(layout, "ShaderNodeValue")
+        node_add_menu.add_node_type(layout, "CompositorNodeNormal")
 
         node_add_menu.draw_assets_for_catalog(layout, "Input/Constant")
 
@@ -67,18 +63,12 @@ class NODE_MT_category_compositor_output(Menu):
     bl_label = "Output"
 
     def draw(self, context):
-        snode = context.space_data
-        is_group = (len(snode.path) > 1)
-
+        del context
         layout = self.layout
-        node_add_menu.add_node_type(layout, "CompositorNodeComposite")
+        node_add_menu.add_node_type(layout, "NodeGroupOutput")
         node_add_menu.add_node_type(layout, "CompositorNodeViewer")
         layout.separator()
         node_add_menu.add_node_type(layout, "CompositorNodeOutputFile")
-
-        if is_group:
-            layout.separator()
-            node_add_menu.add_node_type(layout, "NodeGroupOutput")
 
         node_add_menu.draw_assets_for_catalog(layout, self.bl_label)
 
@@ -135,8 +125,8 @@ class NODE_MT_category_compositor_color_mix(Menu):
         node_add_menu.add_node_type(layout, "CompositorNodeCombineColor")
         node_add_menu.add_node_type(layout, "CompositorNodeSeparateColor")
         layout.separator()
-        node_add_menu.add_color_mix_node(context, layout)
         node_add_menu.add_node_type(layout, "CompositorNodeZcombine")
+        node_add_menu.add_color_mix_node(context, layout)
         node_add_menu.draw_assets_for_catalog(layout, "Color/Mix")
 
 
@@ -160,7 +150,6 @@ class NODE_MT_category_compositor_filter(Menu):
         node_add_menu.add_node_type(layout, "CompositorNodeKuwahara")
         node_add_menu.add_node_type(layout, "CompositorNodePixelate")
         node_add_menu.add_node_type(layout, "CompositorNodePosterize")
-        node_add_menu.add_node_type(layout, "CompositorNodeSunBeams")
 
         node_add_menu.draw_assets_for_catalog(layout, self.bl_label)
 
@@ -303,6 +292,7 @@ class NODE_MT_category_compositor_utilities(Menu):
         layout.separator()
         node_add_menu.add_node_type(layout, "CompositorNodeSplit")
         node_add_menu.add_node_type(layout, "CompositorNodeSwitch")
+        node_add_menu.add_node_type(layout, "GeometryNodeMenuSwitch")
         node_add_menu.add_node_type(
             layout, "CompositorNodeSwitchView",
             label="Switch Stereo View")
@@ -325,7 +315,6 @@ class NODE_MT_category_compositor_vector(Menu):
         ops = props.settings.add()
         ops.name = "data_type"
         ops.value = "'VECTOR'"
-        node_add_menu.add_node_type(layout, "CompositorNodeNormal")
         node_add_menu.add_node_type(layout, "ShaderNodeVectorCurve")
         node_add_menu.add_node_type_with_searchable_enum(context, layout, "ShaderNodeVectorMath", "operation")
         node_add_menu.add_node_type(layout, "ShaderNodeVectorRotate")

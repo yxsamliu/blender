@@ -7,7 +7,7 @@
 
 #include "NOD_rna_define.hh"
 
-#include "UI_interface.hh"
+#include "UI_interface_layout.hh"
 #include "UI_resources.hh"
 
 #include "BLI_array_utils.hh"
@@ -24,7 +24,7 @@ static void node_declare(NodeDeclarationBuilder &b)
 {
   const bNode *node = b.node_or_null();
 
-  b.add_input<decl::Geometry>("Geometry");
+  b.add_input<decl::Geometry>("Geometry").description("Geometry to get the statistics from");
   b.add_input<decl::Bool>("Selection").default_value(true).field_on_all().hide_value();
 
   if (node != nullptr) {

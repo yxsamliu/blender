@@ -259,7 +259,7 @@ static bool idp_snap_calc_incremental(
 static void draw_line_loop(const float coords[][3], int coords_len, const float color[4])
 {
   GPUVertFormat *format = immVertexFormat();
-  uint pos = GPU_vertformat_attr_add(format, "pos", GPU_COMP_F32, 3, GPU_FETCH_FLOAT);
+  uint pos = GPU_vertformat_attr_add(format, "pos", blender::gpu::VertAttrType::SFLOAT_32_32_32);
 
   blender::gpu::VertBuf *vert = GPU_vertbuf_create_with_format(*format);
   GPU_vertbuf_data_alloc(*vert, coords_len);
@@ -292,7 +292,7 @@ static void draw_line_pairs(const float coords_a[][3],
                             const float color[4])
 {
   GPUVertFormat *format = immVertexFormat();
-  uint pos = GPU_vertformat_attr_add(format, "pos", GPU_COMP_F32, 3, GPU_FETCH_FLOAT);
+  uint pos = GPU_vertformat_attr_add(format, "pos", blender::gpu::VertAttrType::SFLOAT_32_32_32);
 
   blender::gpu::VertBuf *vert = GPU_vertbuf_create_with_format(*format);
   GPU_vertbuf_data_alloc(*vert, coords_len * 2);
@@ -323,7 +323,7 @@ static void draw_line_pairs(const float coords_a[][3],
 static void draw_line_bounds(const BoundBox *bounds, const float color[4])
 {
   GPUVertFormat *format = immVertexFormat();
-  uint pos = GPU_vertformat_attr_add(format, "pos", GPU_COMP_F32, 3, GPU_FETCH_FLOAT);
+  uint pos = GPU_vertformat_attr_add(format, "pos", blender::gpu::VertAttrType::SFLOAT_32_32_32);
 
   const int edges[12][2] = {
       /* First side. */
@@ -738,7 +738,7 @@ static void view3d_interactive_add_begin(bContext *C, wmOperator *op, const wmEv
     /* For drag events, update the location since it will be set from the drag-start.
      * This is needed as cursor-drawing doesn't deal with drag events and will use
      * the current cursor location instead of the drag-start. */
-    if (event->val == KM_CLICK_DRAG) {
+    if (event->val == KM_PRESS_DRAG) {
       /* Set this flag so snapping always updated. */
       int mval[2];
       WM_event_drag_start_mval(event, ipd->region, mval);
@@ -1188,7 +1188,8 @@ static wmOperatorStatus view3d_interactive_add_modal(bContext *C,
             RNA_float_set(&op_props, "radius2", 0.0f);
           }
 
-          WM_operator_name_call_ptr(C, ot, WM_OP_EXEC_DEFAULT, &op_props, nullptr);
+          WM_operator_name_call_ptr(
+              C, ot, blender::wm::OpCallContext::ExecDefault, &op_props, nullptr);
           WM_operator_properties_free(&op_props);
         }
         else {

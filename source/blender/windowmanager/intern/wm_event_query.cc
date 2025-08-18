@@ -133,7 +133,7 @@ void WM_event_print(const wmEvent *event)
 
 #ifdef WITH_INPUT_NDOF
     if (ISNDOF(event->type)) {
-      const wmNDOFMotionData *ndof = static_cast<const wmNDOFMotionData *>(event->customdata);
+      const wmNDOFMotionData &ndof = *static_cast<const wmNDOFMotionData *>(event->customdata);
       if (event->type == NDOF_MOTION) {
         const char *ndof_progress = unknown;
 
@@ -142,7 +142,7 @@ void WM_event_print(const wmEvent *event)
       ndof_progress = STRINGIFY(id); \
       break; \
     }
-        switch (ndof->progress) {
+        switch (ndof.progress) {
           CASE_NDOF_PROGRESS(NOT_STARTED);
           CASE_NDOF_PROGRESS(STARTING);
           CASE_NDOF_PROGRESS(IN_PROGRESS);
@@ -151,11 +151,16 @@ void WM_event_print(const wmEvent *event)
         }
 #  undef CASE_NDOF_PROGRESS
 
-        printf(", ndof: rot: (%.4f %.4f %.4f), tx: (%.4f %.4f %.4f), dt: %.4f, progress: %s",
-               UNPACK3(ndof->rvec),
-               UNPACK3(ndof->tvec),
-               ndof->dt,
-               ndof_progress);
+        printf(
+            ", ndof: "
+            "rot: (%.4f %.4f %.4f), "
+            "tx: (%.4f %.4f %.4f), "
+            "time_delta: %.4f, "
+            "progress: %s",
+            UNPACK3(ndof.rvec),
+            UNPACK3(ndof.tvec),
+            ndof.time_delta,
+            ndof_progress);
       }
       else {
         /* NDOF buttons printed already. */
@@ -247,14 +252,14 @@ bool WM_event_is_modal_drag_exit(const wmEvent *event,
   if (U.flag & USER_RELEASECONFIRM) {
     /* Option on, so can exit with km-release. */
     if (event->val == KM_RELEASE) {
-      if ((init_event_val == KM_CLICK_DRAG) && (event->type == init_event_type)) {
+      if ((init_event_val == KM_PRESS_DRAG) && (event->type == init_event_type)) {
         return true;
       }
     }
     else {
       /* If the initial event wasn't a drag event then
        * ignore #USER_RELEASECONFIRM setting: see #26756. */
-      if (init_event_val != KM_CLICK_DRAG) {
+      if (init_event_val != KM_PRESS_DRAG) {
         return true;
       }
     }
@@ -272,7 +277,7 @@ bool WM_event_is_modal_drag_exit(const wmEvent *event,
 
 bool WM_event_is_mouse_drag(const wmEvent *event)
 {
-  return (ISMOUSE_BUTTON(event->type) && (event->val == KM_CLICK_DRAG));
+  return (ISMOUSE_BUTTON(event->type) && (event->val == KM_PRESS_DRAG));
 }
 
 bool WM_event_is_mouse_drag_or_press(const wmEvent *event)
@@ -434,21 +439,21 @@ bool WM_event_drag_test(const wmEvent *event, const int prev_xy[2])
 
 void WM_event_drag_start_mval(const wmEvent *event, const ARegion *region, int r_mval[2])
 {
-  const int *xy = (event->val == KM_CLICK_DRAG) ? event->prev_press_xy : event->xy;
+  const int *xy = (event->val == KM_PRESS_DRAG) ? event->prev_press_xy : event->xy;
   r_mval[0] = xy[0] - region->winrct.xmin;
   r_mval[1] = xy[1] - region->winrct.ymin;
 }
 
 void WM_event_drag_start_mval_fl(const wmEvent *event, const ARegion *region, float r_mval[2])
 {
-  const int *xy = (event->val == KM_CLICK_DRAG) ? event->prev_press_xy : event->xy;
+  const int *xy = (event->val == KM_PRESS_DRAG) ? event->prev_press_xy : event->xy;
   r_mval[0] = xy[0] - region->winrct.xmin;
   r_mval[1] = xy[1] - region->winrct.ymin;
 }
 
 void WM_event_drag_start_xy(const wmEvent *event, int r_xy[2])
 {
-  copy_v2_v2_int(r_xy, (event->val == KM_CLICK_DRAG) ? event->prev_press_xy : event->xy);
+  copy_v2_v2_int(r_xy, (event->val == KM_PRESS_DRAG) ? event->prev_press_xy : event->xy);
 }
 
 /** \} */

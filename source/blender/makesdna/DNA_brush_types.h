@@ -177,16 +177,10 @@ typedef struct Brush {
   struct MTex mtex;
   struct MTex mask_mtex;
 
-  /* TODO (Sean): To be removed in 5.0 */
-  struct Brush *toggle_brush DNA_DEPRECATED;
-
-  struct ImBuf *icon_imbuf;
   PreviewImage *preview;
   /** Color gradient. */
   struct ColorBand *gradient;
   struct PaintCurve *paint_curve;
-
-  char icon_filepath[/*FILE_MAX*/ 1024];
 
   float normal_weight;
   /** Rake actual data (not texture), used for sculpt. */
