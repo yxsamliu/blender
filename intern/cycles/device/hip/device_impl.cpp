@@ -123,13 +123,17 @@ HIPDevice::HIPDevice(const DeviceInfo &info, Stats &stats, Profiler &profiler, b
   /* Pop context set by hipCtxCreate. */
   hipCtxPopCurrent(nullptr);
 }
-extern "C" void __llvm_profile_hip_unregister_dynamic_module(void*);
+#ifdef WITH_OFFLOAD_PGO
+extern "C" void __llvm_profile_offload_unregister_dynamic_module(void*);
+#endif
 
 HIPDevice::~HIPDevice()
 {
   texture_info.free();
   if (hipModule) {
-    __llvm_profile_hip_unregister_dynamic_module((void*)hipModule);
+#ifdef WITH_OFFLOAD_PGO
+    __llvm_profile_offload_unregister_dynamic_module((void*)hipModule);
+#endif
     hip_assert(hipModuleUnload(hipModule));
   }
   hip_assert(hipCtxDestroy(hipContext));
@@ -374,7 +378,9 @@ string HIPDevice::compile_kernel(const uint kernel_features, const char *name, c
   return fatbin;
 }
 
-extern "C" void __llvm_profile_hip_register_dynamic_module(int ModuleLoadRC, void **Ptr);
+#ifdef WITH_OFFLOAD_PGO
+extern "C" void __llvm_profile_offload_register_dynamic_module(int ModuleLoadRC, void **Ptr, const void *Image);
+#endif
 
 bool HIPDevice::load_kernels(const uint kernel_features)
 {
@@ -414,7 +420,9 @@ bool HIPDevice::load_kernels(const uint kernel_features)
 
   if (path_read_compressed_text(fatbin, fatbin_data)) {
     result = hipModuleLoadData(&hipModule, fatbin_data.c_str());
-    __llvm_profile_hip_register_dynamic_module(result, (void**)&hipModule);
+#ifdef WITH_OFFLOAD_PGO
+    __llvm_profile_offload_register_dynamic_module(result, (void**)&hipModule, fatbin_data.c_str());
+#endif
   }
   else {
     result = hipErrorFileNotFound;
